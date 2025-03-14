@@ -1,4 +1,5 @@
 - WELCOME TO THE DND CHARACTER CREATION QUERY USER INTERFACE -
+        - By Brody Couture and Hunter Scholz -
 
 Dependencies: XAMPP Software Package
 
