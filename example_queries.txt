@@ -1,0 +1,84 @@
+Example Queries for the Final Project
+
+Query #1
+
+Return the name and alignment of all characters that have a prepared spell and are good-aligned
+
+SELECT c.name AS 'Spellcaster Name', o.alignment 
+FROM _Character AS c
+JOIN Origin AS o ON c.oid = o.oid
+JOIN Casts AS ca ON c.cid = ca.cid
+WHERE ca.prepared = TRUE AND LOWER(o.alignment) LIKE '%good%';
+
+Query #2
+
+Return the name of a character and the stats they have a saving throw proficiency in, but only if they have a saving throw proficiency 
+and at least one piece of equipment
+
+SELECT DISTINCT c.name AS 'Character Name', p.name AS 'Proficiency'
+FROM _Character AS c
+JOIN Is_Proficient_With AS ip ON c.cid = ip.cid
+JOIN Proficiency AS p ON ip.proficiency = p.name
+JOIN Starting_Equipment AS se ON c.cid = se.cid
+WHERE LOWER(p._type) LIKE '%saving throw%';
+
+Query #3
+
+Return the name and class of a character and the features they recieved from their class, ordered by character name and subordered by feat name
+
+SELECT DISTINCT c.name AS 'Character Name', cl.name AS 'Class Name', f.name AS 'Feature'
+FROM _Class AS cl
+JOIN _Character AS c ON cl.name = c._class
+JOIN Knows AS k ON k.cid = c.cid
+JOIN Feature AS f ON k.feature = f.name
+JOIN Class_Gives AS cg ON f.name = cg.feature
+ORDER BY c.name, f.name;
+
+Query #4
+
+Return the name, starting health, physical stats, and alignment of characters that do not know magic missile and 
+that have either a good or evil alignment, ordered by their starting health amount
+
+SELECT c.name, cl.starting_hp, cs._str, cs.dex, cs.con, o.alignment
+FROM _Character AS c
+JOIN Char_Stats AS cs ON c.cid = cs.cid
+JOIN Origin AS o ON c.oid = o.oid
+JOIN _Class AS cl ON c._class = cl.name
+WHERE (LOWER(o.alignment) LIKE '%good%' OR LOWER(o.alignment) LIKE '%evil%') 
+AND c.cid NOT IN (
+		SELECT cid 
+		FROM Casts AS ca
+		JOIN Spell AS s ON ca.spell = s.name
+		WHERE LOWER(s.name) = 'magic missile'
+		)
+ORDER BY cl.starting_hp DESC;
+		
+Query #5
+
+Returns every possible feature that are available to the characters in our database 
+(based on the backgrounds and classes that actually belong to the characters)
+
+SELECT Feature, `From`
+FROM(
+	SELECT DISTINCT f.name AS 'Feature', cl.name AS 'From', 1 AS 'sort_order'
+	FROM _Character AS c
+	JOIN _Class AS cl ON c._class = cl.name
+	JOIN Class_Gives AS cg ON cl.name = cg.class_name
+	JOIN Feature AS f ON cg.feature = f.name
+
+	UNION
+
+	SELECT DISTINCT f.name AS 'Feature', CONCAT('Origin Number ', o.oid) as 'From', 2 AS 'sort_order'
+	FROM _Character AS c
+	JOIN Origin AS o ON c.oid = o.oid
+	JOIN Origin_Gives AS og ON o.oid = og.oid
+	JOIN Feature AS f ON og.feature = f.name
+) AS Sorted
+ORDER BY sort_order, feature;
+
+
+
+
+
+
+
