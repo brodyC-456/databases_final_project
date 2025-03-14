@@ -18,6 +18,8 @@
     if ($result) {
         if ($result->num_rows > 0) {
             echo "<table border='1'><tr>";
+			echo "<body style='background-color:powderblue;'>";
+			echo "<style> body{font-family: 'Trebuchet MS', sans-serif;} table{background-color: #CBC3E3;} </style>";
 
             // Get column names
             while ($field = $result->fetch_field()) {
