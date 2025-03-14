@@ -1,6 +1,6 @@
 Example Queries for the Final Project
 
-Query #1
+- Query #1 -
 
 Return the name and alignment of all characters that have a prepared spell and are good-aligned
 
@@ -10,7 +10,14 @@ JOIN Origin AS o ON c.oid = o.oid
 JOIN Casts AS ca ON c.cid = ca.cid
 WHERE ca.prepared = TRUE AND LOWER(o.alignment) LIKE '%good%';
 
-Query #2
+Result Set:
+
+Spellcaster Name	alignment
+
+Vailynn	            Chaotic Good
+Lulu	            Lawful  Good
+
+- Query #2 -
 
 Return the name of a character and the stats they have a saving throw proficiency in, but only if they have a saving throw proficiency 
 and at least one piece of equipment
@@ -22,7 +29,14 @@ JOIN Proficiency AS p ON ip.proficiency = p.name
 JOIN Starting_Equipment AS se ON c.cid = se.cid
 WHERE LOWER(p._type) LIKE '%saving throw%';
 
-Query #3
+Result Set:
+
+Character Name	   Proficiency
+
+Vailynn	           Wisdom Saves
+
+
+- Query #3 -
 
 Return the name and class of a character and the features they recieved from their class, ordered by character name and subordered by feat name
 
@@ -34,7 +48,17 @@ JOIN Feature AS f ON k.feature = f.name
 JOIN Class_Gives AS cg ON f.name = cg.feature
 ORDER BY c.name, f.name;
 
-Query #4
+Result Set:
+
+Character Name	   Class Name	     Feature
+
+Astarion	       Rogue	         Sneak Attack
+Chess	           Paladin	         Extra Attack
+John Fighterman	   Fighter           Action Surge
+John Fighterman	   Fighter	         Extra Attack
+Lulu	           Cleric	         Channel Divinity
+
+- Query #4 -
 
 Return the name, starting health, physical stats, and alignment of characters that do not know magic missile and 
 that have either a good or evil alignment, ordered by their starting health amount
@@ -52,8 +76,17 @@ AND c.cid NOT IN (
 		WHERE LOWER(s.name) = 'magic missile'
 		)
 ORDER BY cl.starting_hp DESC;
+
+Result Set:
+
+name	        starting_hp	  _str	  dex	con	   alignment
+
+Lulu	        12	          5	      16	18	   Lawful Good
+John Fighterman	10	          18	  10	16	   Neutral Good
+Astarion	    9	          8	      17	14	   Lawful Evil
+
 		
-Query #5
+- Query #5 -
 
 Returns every possible feature that are available to the characters in our database 
 (based on the backgrounds and classes that actually belong to the characters)
@@ -76,6 +109,15 @@ FROM(
 ) AS Sorted
 ORDER BY sort_order, feature;
 
+Result Set (LIMIT 5):
+
+Feature             From
+
+Action Surge	    Fighter
+Channel Divinity	Cleric
+Extra Attack	    Fighter
+Extra Attack	    Paladin
+Sneak Attack	    Rogue
 
 
 
